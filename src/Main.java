@@ -5,7 +5,6 @@ import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
@@ -53,16 +52,16 @@ public class Main {
                 timeCounter++;
                 if (timeCounter >= timeCounterThreshold) {
                     timeCounter = 0;
-
-                    addRandomIce(iceCreams, 'I');
+                    terminal.clearScreen();
+                    addRandomFlakes(iceCreams, 'I');
                     moveSnowFlakes(iceCreams);
                     removeDeadFlakes(iceCreams);
                     printSnowFlakes(iceCreams, terminal);
 
-//                    addRandomFlakes(snowFlakes, 'O');
-//                    moveSnowFlakes(snowFlakes);
-//                    removeDeadFlakes(snowFlakes);
-//                    printSnowFlakes(snowFlakes, terminal);
+                    addRandomFlakes(snowFlakes, 'O');
+                    moveSnowFlakes(snowFlakes);
+                    removeDeadFlakes(snowFlakes);
+                    printSnowFlakes(snowFlakes, terminal);
 
                     printPlayer(terminal, player);
                     isPlayerDead(player, snowFlakes);
@@ -99,7 +98,7 @@ public class Main {
     }
 
     private static void printSnowFlakes(List<Flake> snowFlakes, Terminal terminal) throws IOException {
-        terminal.clearScreen();
+//        terminal.clearScreen();
         for (Flake flake : snowFlakes) {
             terminal.setCursorPosition(flake.getX(), flake.getY());
             terminal.putCharacter(flake.getSymbol());
@@ -107,7 +106,8 @@ public class Main {
 
     }
 
-    private static void moveSnowFlakes(List<Flake> snowFlakes) {
+
+        private static void moveSnowFlakes(List<Flake> snowFlakes) {
         for (Flake flake : snowFlakes) {
             flake.fall();
         }
@@ -116,18 +116,11 @@ public class Main {
     private static void addRandomFlakes(List<Flake> snowFlakes, char symbol) {
 
         double probability = ThreadLocalRandom.current().nextDouble();
-        if (probability <= 0.5) {
+        if (probability <= 0.4) {
             snowFlakes.add(new Flake(ThreadLocalRandom.current().nextInt(30), 0, symbol));
         }
     }
 
-    private static void addRandomIce(List<Flake> snowFlakes, char symbol) {
-
-        Random random = new Random();
-        int probability = random.nextInt(10) + 1;
-        if (probability > 1)
-            snowFlakes.add(new Flake(ThreadLocalRandom.current().nextInt(30), 0, symbol));
-    }
 
     private static void movePlayer(Player player, KeyStroke keyStroke) {
         switch (keyStroke.getKeyType()) {
