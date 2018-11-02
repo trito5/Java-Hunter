@@ -5,48 +5,111 @@ import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
-
     public static void main(String[] args) {
         try {
-            startGame();
+            startSimulation();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             System.exit(1);
         } finally {
-            System.out.println("Game over!");
+            System.out.println("Simulation over!");
         }
 
     }
 
-    private static void startGame() throws IOException, InterruptedException {
+    private static void startSimulation() throws IOException, InterruptedException {
         Terminal terminal = createTerminal();
 
-        Player player = createPlayer();
+        simulationLoop(terminal);
+    }
 
-        List<Monster> monsters = createMonsters();
+    private static Terminal createTerminal() throws IOException {
+        DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
+        Terminal terminal = terminalFactory.createTerminal();
+        terminal.setCursorVisible(false);
+        return terminal;
+    }
 
-        drawCharacters(terminal, player, monsters);
+    private static void simulationLoop(Terminal terminal) throws InterruptedException, IOException {
 
-        do {
-            KeyStroke keyStroke = getUserKeyStroke(terminal);
+
+        Player player = new Player(10, 10, '\u263a');
+        List<Flake> snowFlakes = new ArrayList<>();
+        final int timeCounterThreshold = 80;
+        int timeCounter = 0;
+
+        while(true){
+            KeyStroke keyStroke;
+            do {
+                // everything inside this loop will be called approximately every ~5 millisec.
+                Thread.sleep(5);
+                keyStroke = terminal.pollInput();
+
+                timeCounter++;
+                if (timeCounter >= timeCounterThreshold){
+                    timeCounter = 0;
+
+                    addRandomFlakes(snowFlakes);
+                    moveSnowFlakes(snowFlakes);
+                    removeDeadFlakes(snowFlakes);
+                    printSnowFlakes(snowFlakes, terminal);
+                    printPlayer(terminal, player);
+
+                    terminal.flush(); // don't forget to flush to see any updates!
+                }
+
+
+            } while (keyStroke == null);
 
             movePlayer(player, keyStroke);
+            printPlayer(terminal, player);
 
-            moveMonsters(player, monsters);
+            terminal.flush(); // don't forget to flush to see any updates!
+        }
+    }
 
-            drawCharacters(terminal, player, monsters);
+    private static void removeDeadFlakes(List<Flake> snowFlakes) {
+        List<Flake> flakesToRemove = new ArrayList<>();
+        for (Flake flake : snowFlakes) {
+            if (flake.getY() >= 20){
+                flakesToRemove.add(flake);
+            }
+        }
+        snowFlakes.removeAll(flakesToRemove);
+    }
 
-        } while (isPlayerAlive(player, monsters));
+    private static void printPlayer(Terminal terminal, Player player) throws IOException {
+        terminal.setCursorPosition(player.getPreviousX(), player.getPreviousY());
+        terminal.putCharacter(' ');
 
+        terminal.setCursorPosition(player.getX(), player.getY());
+        terminal.putCharacter(player.getSymbol());
 
     }
 
-    private static void moveMonsters(Player player, List<Monster> monsters) {
-        for (Monster monster : monsters) {
-            monster.moveTowards(player);
+    private static void printSnowFlakes(List<Flake> snowFlakes, Terminal terminal) throws IOException {
+        terminal.clearScreen();
+        for (Flake flake : snowFlakes) {
+            terminal.setCursorPosition(flake.getX(), flake.getY());
+            terminal.putCharacter(flake.getSymbol());
         }
+
+    }
+
+    private static void moveSnowFlakes(List<Flake> snowFlakes) {
+        for (Flake flake : snowFlakes) {
+            flake.fall();
+        }
+    }
+
+    private static void addRandomFlakes(List<Flake> snowFlakes) {
+
+        double probability = ThreadLocalRandom.current().nextDouble();
+        if(probability <= 0.4)
+            snowFlakes.add(new Flake(ThreadLocalRandom.current().nextInt(30), 0, '0'));
     }
 
     private static void movePlayer(Player player, KeyStroke keyStroke) {
@@ -65,61 +128,6 @@ public class Main {
                 break;
         }
     }
-
-    private static KeyStroke getUserKeyStroke(Terminal terminal) throws InterruptedException, IOException {
-        KeyStroke keyStroke;
-        do {
-            Thread.sleep(5);
-            keyStroke = terminal.pollInput();
-        } while (keyStroke == null);
-        return keyStroke;
-    }
-
-    private static Player createPlayer() {
-        return new Player(10, 10, '\u263a');
-    }
-
-    private static List<Monster> createMonsters() {
-        List<Monster> monsters = new ArrayList<>();
-        monsters.add(new Monster(3, 3, 'X'));
-        monsters.add(new Monster(23, 23, 'X'));
-        monsters.add(new Monster(23, 3, 'X'));
-        monsters.add(new Monster(3, 23, 'X'));
-        return monsters;
-    }
-
-    private static Terminal createTerminal() throws IOException {
-        DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
-        Terminal terminal = terminalFactory.createTerminal();
-        terminal.setCursorVisible(false);
-        return terminal;
-    }
-
-    private static void drawCharacters(Terminal terminal, Player player, List<Monster> monsters) throws IOException {
-        for (Monster monster : monsters) {
-            terminal.setCursorPosition(monster.getPreviousX(), monster.getPreviousY());
-            terminal.putCharacter(' ');
-
-            terminal.setCursorPosition(monster.getX(), monster.getY());
-            terminal.putCharacter(monster.getSymbol());
-        }
-
-        terminal.setCursorPosition(player.getPreviousX(), player.getPreviousY());
-        terminal.putCharacter(' ');
-
-        terminal.setCursorPosition(player.getX(), player.getY());
-        terminal.putCharacter(player.getSymbol());
-
-        terminal.flush();
-
-    }
-
-    private static boolean isPlayerAlive(Player player, List<Monster> monsters) {
-        for (Monster monster : monsters) {
-            if (monster.getX() == player.getX() && monster.getY() == player.getY()) {
-                return false;
-            }
-        }
-        return true;
-    }
 }
+
+
