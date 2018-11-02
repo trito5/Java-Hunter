@@ -5,6 +5,7 @@ import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
@@ -36,12 +37,13 @@ public class Main {
     private static void simulationLoop(Terminal terminal) throws InterruptedException, IOException {
 
 
-        Player player = new Player(10, 10, '\u263a');
+        Player player = new Player(10, 10, '\u2620');
         List<Flake> snowFlakes = new ArrayList<>();
+        List<Flake> iceCreams = new ArrayList<>();
         final int timeCounterThreshold = 80;
         int timeCounter = 0;
 
-        while(true){
+        while (true) {
             KeyStroke keyStroke;
             do {
                 // everything inside this loop will be called approximately every ~5 millisec.
@@ -49,14 +51,21 @@ public class Main {
                 keyStroke = terminal.pollInput();
 
                 timeCounter++;
-                if (timeCounter >= timeCounterThreshold){
+                if (timeCounter >= timeCounterThreshold) {
                     timeCounter = 0;
 
-                    addRandomFlakes(snowFlakes);
-                    moveSnowFlakes(snowFlakes);
-                    removeDeadFlakes(snowFlakes);
-                    printSnowFlakes(snowFlakes, terminal);
+                    addRandomIce(iceCreams, 'I');
+                    moveSnowFlakes(iceCreams);
+                    removeDeadFlakes(iceCreams);
+                    printSnowFlakes(iceCreams, terminal);
+
+//                    addRandomFlakes(snowFlakes, 'O');
+//                    moveSnowFlakes(snowFlakes);
+//                    removeDeadFlakes(snowFlakes);
+//                    printSnowFlakes(snowFlakes, terminal);
+
                     printPlayer(terminal, player);
+                    isPlayerDead(player, snowFlakes);
 
                     terminal.flush(); // don't forget to flush to see any updates!
                 }
@@ -66,7 +75,6 @@ public class Main {
 
             movePlayer(player, keyStroke);
             printPlayer(terminal, player);
-
             terminal.flush(); // don't forget to flush to see any updates!
         }
     }
@@ -74,7 +82,7 @@ public class Main {
     private static void removeDeadFlakes(List<Flake> snowFlakes) {
         List<Flake> flakesToRemove = new ArrayList<>();
         for (Flake flake : snowFlakes) {
-            if (flake.getY() >= 20){
+            if (flake.getY() >= 20) {
                 flakesToRemove.add(flake);
             }
         }
@@ -105,11 +113,20 @@ public class Main {
         }
     }
 
-    private static void addRandomFlakes(List<Flake> snowFlakes) {
+    private static void addRandomFlakes(List<Flake> snowFlakes, char symbol) {
 
         double probability = ThreadLocalRandom.current().nextDouble();
-        if(probability <= 0.4)
-            snowFlakes.add(new Flake(ThreadLocalRandom.current().nextInt(30), 0, '0'));
+        if (probability <= 0.5) {
+            snowFlakes.add(new Flake(ThreadLocalRandom.current().nextInt(30), 0, symbol));
+        }
+    }
+
+    private static void addRandomIce(List<Flake> snowFlakes, char symbol) {
+
+        Random random = new Random();
+        int probability = random.nextInt(10) + 1;
+        if (probability > 1)
+            snowFlakes.add(new Flake(ThreadLocalRandom.current().nextInt(30), 0, symbol));
     }
 
     private static void movePlayer(Player player, KeyStroke keyStroke) {
@@ -128,6 +145,17 @@ public class Main {
                 break;
         }
     }
+
+    private static boolean isPlayerDead(Player player, List<Flake> flakes) {
+        for (Flake flake : flakes) {
+            if (player.getX() == flake.getX() && player.getY() == flake.getY()) {
+                System.out.println("DÖD");
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
 
 
