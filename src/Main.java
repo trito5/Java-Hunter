@@ -48,6 +48,7 @@ public class Main {
         int timeCounter = 0;
         int counter = 0;
         int speedChange = 15;
+        int level = 1;
 
 
         while (true) {
@@ -70,9 +71,11 @@ public class Main {
                         if (counter > 10 && counter % 5 == 0) {
                             timeCounterThreshold -= speedChange;
                             speedChange--;
+                            level++;
                         } else if (counter <= 10 && counter % 3 == 0) {
                             timeCounterThreshold -= speedChange;
                             speedChange--;
+                            level++;
                         }
                     }
 
@@ -93,7 +96,7 @@ public class Main {
                     printScore(terminal, counter);
                     printPlayer(terminal, player);
                     printWalls(bricks, terminal);
-
+                    printLevel(terminal, level);
 
                     terminal.flush(); // don't forget to flush to see any updates!
                 }
@@ -149,6 +152,26 @@ public class Main {
         }
     }
 
+    private static void printLevel(Terminal terminal, int level) throws IOException {
+        terminal.setCursorPosition(0, 21);
+        terminal.putCharacter('L');
+        terminal.setCursorPosition(1, 21);
+        terminal.putCharacter('E');
+        terminal.setCursorPosition(2, 21);
+        terminal.putCharacter('V');
+        terminal.setCursorPosition(3, 21);
+        terminal.putCharacter('E');
+        terminal.setCursorPosition(4, 21);
+        terminal.putCharacter('L');
+        terminal.setCursorPosition(5, 21);
+        terminal.putCharacter(':');
+        terminal.setCursorPosition(6, 21);
+        terminal.putCharacter(' ');
+        String levels = Integer.toString(level);
+        terminal.setCursorPosition(7, 21);
+        terminal.putCharacter(levels.charAt(0));
+    }
+
     private static void printPlayer(Terminal terminal, Player player) throws IOException {
         terminal.setForegroundColor(TextColor.ANSI.YELLOW);
         terminal.setCursorPosition(player.getPreviousX(), player.getPreviousY());
@@ -167,14 +190,14 @@ public class Main {
 
     }
 
-    private static void printWalls (List<Brick> bricks, Terminal terminal) throws IOException {
+    private static void printWalls(List<Brick> bricks, Terminal terminal) throws IOException {
         for (Brick brick : bricks) {
             terminal.setCursorPosition(brick.getX(), brick.getY());
             terminal.putCharacter(brick.getSymbol());
         }
     }
 
-    private static List<Brick> generateWalls () {
+    private static List<Brick> generateWalls() {
         List<Brick> tempList = new ArrayList<>();
 
         for (int i = 10; i <= 68; i++) {
@@ -206,7 +229,7 @@ public class Main {
 
         double probability = ThreadLocalRandom.current().nextDouble();
         if (probability <= 0.4) {
-            snowFlakes.add(new Flake(ThreadLocalRandom.current().nextInt(57) +11, 0, symbol));
+            snowFlakes.add(new Flake(ThreadLocalRandom.current().nextInt(57) + 11, 0, symbol));
         }
     }
 
@@ -214,31 +237,31 @@ public class Main {
     private static void movePlayer(Player player, KeyStroke keyStroke, List<Brick> bricks) {
         switch (keyStroke.getKeyType()) {
             case ArrowUp:
-                if (!isPlayerHittingWall(player.getX(), player.getY()-1, bricks)) {
+                if (!isPlayerHittingWall(player.getX(), player.getY() - 1, bricks)) {
                     player.moveUp();
                 }
                 break;
             case ArrowDown:
-                if (!isPlayerHittingWall(player.getX(), player.getY()+1, bricks)) {
+                if (!isPlayerHittingWall(player.getX(), player.getY() + 1, bricks)) {
                     player.moveDown();
                 }
-                    break;
+                break;
             case ArrowLeft:
-                if (!isPlayerHittingWall(player.getX()-1, player.getY(), bricks)) {
+                if (!isPlayerHittingWall(player.getX() - 1, player.getY(), bricks)) {
                     player.moveLeft();
                 }
                 break;
             case ArrowRight:
-                if (!isPlayerHittingWall(player.getX()+1, player.getY(), bricks)) {
+                if (!isPlayerHittingWall(player.getX() + 1, player.getY(), bricks)) {
                     player.moveRight();
                 }
                 break;
         }
     }
 
-    private static boolean isPlayerHittingWall(int x, int y, List<Brick> bricks){
-        for(Brick brick : bricks) {
-            if (x == brick.getX() && y == brick.getY()){
+    private static boolean isPlayerHittingWall(int x, int y, List<Brick> bricks) {
+        for (Brick brick : bricks) {
+            if (x == brick.getX() && y == brick.getY()) {
                 return true;
             }
         }
