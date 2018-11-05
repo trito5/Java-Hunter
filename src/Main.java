@@ -96,7 +96,7 @@ public class Main {
                     printScore(terminal, counter);
                     printPlayer(terminal, player);
                     printWalls(bricks, terminal);
-                    printLevel(terminal, level);
+                    printSpeed(terminal, level);
 
                     terminal.flush(); // don't forget to flush to see any updates!
                 }
@@ -115,7 +115,7 @@ public class Main {
             terminal.flush(); // don't forget to flush to see any updates!
 
         }
-        drawGameOver(terminal, counter);
+        drawGameOver(terminal, counter, level);
 
     }
 
@@ -152,23 +152,23 @@ public class Main {
         }
     }
 
-    private static void printLevel(Terminal terminal, int level) throws IOException {
-        terminal.setCursorPosition(0, 21);
-        terminal.putCharacter('L');
-        terminal.setCursorPosition(1, 21);
+    private static void printSpeed(Terminal terminal, int level) throws IOException {
+        terminal.setCursorPosition(70, 23);
+        terminal.putCharacter('S');
+        terminal.setCursorPosition(71, 23);
+        terminal.putCharacter('P');
+        terminal.setCursorPosition(72, 23);
         terminal.putCharacter('E');
-        terminal.setCursorPosition(2, 21);
-        terminal.putCharacter('V');
-        terminal.setCursorPosition(3, 21);
+        terminal.setCursorPosition(73, 23);
         terminal.putCharacter('E');
-        terminal.setCursorPosition(4, 21);
-        terminal.putCharacter('L');
-        terminal.setCursorPosition(5, 21);
+        terminal.setCursorPosition(74, 23);
+        terminal.putCharacter('D');
+        terminal.setCursorPosition(75, 23);
         terminal.putCharacter(':');
-        terminal.setCursorPosition(6, 21);
+        terminal.setCursorPosition(76, 23);
         terminal.putCharacter(' ');
         String levels = Integer.toString(level);
-        terminal.setCursorPosition(7, 21);
+        terminal.setCursorPosition(77, 23);
         terminal.putCharacter(levels.charAt(0));
     }
 
@@ -289,7 +289,7 @@ public class Main {
         return false;
     }
 
-    private static void drawGameOver(Terminal terminal, int counter) throws IOException {
+    private static void drawGameOver(Terminal terminal, int counter, int level) throws IOException {
         terminal.clearScreen();
         terminal.setCursorPosition(33, 10);
         terminal.putCharacter('G');
@@ -308,6 +308,7 @@ public class Main {
         terminal.setCursorPosition(41, 10);
         terminal.putCharacter('R');
         printScore(terminal, counter);
+        printSpeed(terminal, level);
         terminal.flush();
 
     }
