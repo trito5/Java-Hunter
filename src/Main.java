@@ -42,9 +42,9 @@ public class Main {
         Player player = new Player(10, 10, '\u2620');
         List<Flake> snowFlakes = new ArrayList<>();
         List<Flake> iceCreams = new ArrayList<>();
+        List<Brick> bricks = generateWalls();
         final int timeCounterThreshold = 80;
         int timeCounter = 0;
-
         int counter = 0;
 
         while (true) {
@@ -71,7 +71,10 @@ public class Main {
                     addRandomFlakes(iceCreams, 'I');
                     moveSnowFlakes(iceCreams);
                     removeDeadFlakes(iceCreams);
+
+
                     printSnowFlakes(iceCreams, terminal);
+
 
                     addRandomFlakes(snowFlakes, 'O');
                     moveSnowFlakes(snowFlakes);
@@ -80,6 +83,7 @@ public class Main {
 
                     printScore(terminal, counter);
                     printPlayer(terminal, player);
+                    printWalls(bricks, terminal);
 
 
                     terminal.flush(); // don't forget to flush to see any updates!
@@ -146,12 +150,35 @@ public class Main {
     }
 
     private static void printSnowFlakes(List<Flake> snowFlakes, Terminal terminal) throws IOException {
-//        terminal.clearScreen();
         for (Flake flake : snowFlakes) {
             terminal.setCursorPosition(flake.getX(), flake.getY());
             terminal.putCharacter(flake.getSymbol());
         }
 
+    }
+
+    private static void printWalls (List<Brick> bricks, Terminal terminal) throws IOException {
+        for (Brick brick : bricks) {
+            terminal.setCursorPosition(brick.getX(), brick.getY());
+            terminal.putCharacter(brick.getSymbol());
+        }
+    }
+
+    private static List<Brick> generateWalls () {
+        List<Brick> tempList = new ArrayList<>();
+
+        for (int i = 10; i < 68; i++) {
+            tempList.add(new Brick(i, 5));
+        }
+
+        for (int i = 1; i < 20; i++) {
+            tempList.add(new Brick(10, i));
+        }
+
+        for (int i = 1; i < 20; i++) {
+            tempList.add(new Brick(68, i));
+        }
+        return tempList;
     }
 
 
