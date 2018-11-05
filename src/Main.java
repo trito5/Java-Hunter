@@ -151,7 +151,7 @@ public class Main {
     private static boolean isPlayerDead(Player player, List<Flake> flakes) throws IOException {
         for (Flake flake : flakes) {
             if (player.getX() == flake.getX() && player.getY() == flake.getY()) {
-                System.out.println("DÖD");
+
 
                 return true;
             }
