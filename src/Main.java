@@ -196,9 +196,9 @@ public class Main {
     }
 
     private static boolean isPlayerScoring(Player player, List<Flake> iceCreams) throws IOException {
-        for (Flake iceCream : iceCreams) {
-            if (player.getX() == iceCream.getX() && player.getY() == iceCream.getY()) {
-
+        for (int i = 0; i < iceCreams.size(); i++) {
+            if (player.getX() == iceCreams.get(i).getX() && player.getY() == iceCreams.get(i).getY()) {
+                iceCreams.remove(i);
                 return true;
             }
         }
