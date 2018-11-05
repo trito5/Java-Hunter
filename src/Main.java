@@ -111,7 +111,7 @@ public class Main {
             terminal.flush(); // don't forget to flush to see any updates!
 
         }
-        drawGameOver(terminal);
+        drawGameOver(terminal, counter);
 
     }
 
@@ -264,7 +264,7 @@ public class Main {
         return false;
     }
 
-    private static void drawGameOver(Terminal terminal) throws IOException {
+    private static void drawGameOver(Terminal terminal, int counter) throws IOException {
         terminal.clearScreen();
         terminal.setCursorPosition(33, 10);
         terminal.putCharacter('G');
@@ -282,6 +282,7 @@ public class Main {
         terminal.putCharacter('E');
         terminal.setCursorPosition(41, 10);
         terminal.putCharacter('R');
+        printScore(terminal, counter);
         terminal.flush();
 
     }
