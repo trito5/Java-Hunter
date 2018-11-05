@@ -14,6 +14,9 @@ public class Main {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             System.exit(1);
+
+        } catch (NullPointerException e) {
+            System.out.println("Fel: " + e);
         } finally {
             System.out.println("Simulation over!");
         }
@@ -42,13 +45,15 @@ public class Main {
         final int timeCounterThreshold = 80;
         int timeCounter = 0;
 
-        while (!isPlayerDead(player, snowFlakes)) {
+        while (true) {
             KeyStroke keyStroke;
             do {
                 // everything inside this loop will be called approximately every ~5 millisec.
                 Thread.sleep(5);
                 keyStroke = terminal.pollInput();
-
+                if (isPlayerDead(player, snowFlakes)) {
+                    break;
+                }
                 timeCounter++;
                 if (timeCounter >= timeCounterThreshold) {
                     timeCounter = 0;
@@ -64,20 +69,21 @@ public class Main {
                     printSnowFlakes(snowFlakes, terminal);
 
                     printPlayer(terminal, player);
-                    if (isPlayerDead(player, snowFlakes)){
-                        drawGameOver(terminal);
 
-                    }
 
                     terminal.flush(); // don't forget to flush to see any updates!
                 }
 
             } while (keyStroke == null);
-
+            if (isPlayerDead(player, snowFlakes)){
+                break;
+            }
             movePlayer(player, keyStroke);
             printPlayer(terminal, player);
             terminal.flush(); // don't forget to flush to see any updates!
+
         }
+        drawGameOver(terminal);
 
     }
 
@@ -110,7 +116,7 @@ public class Main {
     }
 
 
-        private static void moveSnowFlakes(List<Flake> snowFlakes) {
+    private static void moveSnowFlakes(List<Flake> snowFlakes) {
         for (Flake flake : snowFlakes) {
             flake.fall();
         }
@@ -142,17 +148,18 @@ public class Main {
         }
     }
 
-    private static boolean isPlayerDead(Player player, List<Flake> flakes) {
+    private static boolean isPlayerDead(Player player, List<Flake> flakes) throws IOException {
         for (Flake flake : flakes) {
             if (player.getX() == flake.getX() && player.getY() == flake.getY()) {
                 System.out.println("DÖD");
+
                 return true;
             }
         }
         return false;
     }
 
-    private static void drawGameOver(Terminal terminal) throws IOException{
+    private static void drawGameOver(Terminal terminal) throws IOException {
         terminal.clearScreen();
         terminal.setCursorPosition(33, 10);
         terminal.putCharacter('G');
