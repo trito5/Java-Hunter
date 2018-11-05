@@ -45,6 +45,8 @@ public class Main {
         final int timeCounterThreshold = 80;
         int timeCounter = 0;
 
+        int counter = 0;
+
         while (true) {
             KeyStroke keyStroke;
             do {
@@ -54,8 +56,14 @@ public class Main {
                 if (isPlayerDead(player, snowFlakes)) {
                     break;
                 }
+
                 timeCounter++;
                 if (timeCounter >= timeCounterThreshold) {
+                    if (isPlayerScoring(player, iceCreams)) {
+                        counter++;
+                        System.out.println(counter);
+                    }
+
                     timeCounter = 0;
                     terminal.clearScreen();
                     addRandomFlakes(iceCreams, 'I');
@@ -68,6 +76,7 @@ public class Main {
                     removeDeadFlakes(snowFlakes);
                     printSnowFlakes(snowFlakes, terminal);
 
+                    printScore(terminal, counter);
                     printPlayer(terminal, player);
 
 
@@ -95,6 +104,26 @@ public class Main {
             }
         }
         snowFlakes.removeAll(flakesToRemove);
+    }
+
+    private static void printScore(Terminal terminal, int counter) throws IOException {
+        terminal.setCursorPosition(0, 30);
+        terminal.putCharacter('S');
+        terminal.setCursorPosition(1, 30);
+        terminal.putCharacter('C');
+        terminal.setCursorPosition(2, 30);
+        terminal.putCharacter('O');
+        terminal.setCursorPosition(3, 30);
+        terminal.putCharacter('R');
+        terminal.setCursorPosition(4, 30);
+        terminal.putCharacter('E');
+        terminal.setCursorPosition(5, 30);
+        terminal.putCharacter(':');
+        terminal.setCursorPosition(6, 30);
+        terminal.putCharacter(' ');
+        terminal.setCursorPosition(7, 30);
+
+
     }
 
     private static void printPlayer(Terminal terminal, Player player) throws IOException {
@@ -159,6 +188,16 @@ public class Main {
         return false;
     }
 
+    private static boolean isPlayerScoring(Player player, List<Flake> iceCreams) throws IOException {
+        for (Flake iceCream : iceCreams) {
+            if (player.getX() == iceCream.getX() && player.getY() == iceCream.getY()) {
+
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static void drawGameOver(Terminal terminal) throws IOException {
         terminal.clearScreen();
         terminal.setCursorPosition(33, 10);
@@ -179,8 +218,9 @@ public class Main {
         terminal.putCharacter('R');
         terminal.flush();
 
-
     }
+
+
 
 }
 
