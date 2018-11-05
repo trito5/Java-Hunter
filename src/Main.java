@@ -43,9 +43,11 @@ public class Main {
         List<Flake> snowFlakes = new ArrayList<>();
         List<Flake> iceCreams = new ArrayList<>();
         List<Brick> bricks = generateWalls();
-        final int timeCounterThreshold = 80;
+        int timeCounterThreshold = 80;
         int timeCounter = 0;
         int counter = 0;
+        int speedChange = 15;
+
 
         while (true) {
             KeyStroke keyStroke;
@@ -64,7 +66,13 @@ public class Main {
 
                     if (isPlayerScoring(player, iceCreams)) {
                         counter++;
-                        System.out.println(counter);
+                        if (counter > 10 && counter % 5 == 0) {
+                            timeCounterThreshold -= speedChange;
+                            speedChange--;
+                        } else if (counter <= 10 && counter % 3 == 0) {
+                            timeCounterThreshold -= speedChange;
+                            speedChange--;
+                        }
                     }
 
                     terminal.clearScreen();
