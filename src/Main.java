@@ -59,12 +59,14 @@ public class Main {
 
                 timeCounter++;
                 if (timeCounter >= timeCounterThreshold) {
+
+                    timeCounter = 0;
+
                     if (isPlayerScoring(player, iceCreams)) {
                         counter++;
                         System.out.println(counter);
                     }
 
-                    timeCounter = 0;
                     terminal.clearScreen();
                     addRandomFlakes(iceCreams, 'I');
                     moveSnowFlakes(iceCreams);
@@ -86,6 +88,11 @@ public class Main {
             } while (keyStroke == null);
             if (isPlayerDead(player, snowFlakes)){
                 break;
+            }
+
+            if (isPlayerScoring(player, iceCreams)) {
+                counter++;
+                System.out.println(counter);
             }
             movePlayer(player, keyStroke);
             printPlayer(terminal, player);
