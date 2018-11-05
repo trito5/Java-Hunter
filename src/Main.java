@@ -1,3 +1,4 @@
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
@@ -149,6 +150,7 @@ public class Main {
     }
 
     private static void printPlayer(Terminal terminal, Player player) throws IOException {
+        terminal.setForegroundColor(TextColor.ANSI.YELLOW);
         terminal.setCursorPosition(player.getPreviousX(), player.getPreviousY());
         terminal.putCharacter(' ');
 
