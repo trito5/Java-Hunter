@@ -42,7 +42,7 @@ public class Main {
         final int timeCounterThreshold = 80;
         int timeCounter = 0;
 
-        while (true) {
+        while (!isPlayerDead(player, snowFlakes)) {
             KeyStroke keyStroke;
             do {
                 // everything inside this loop will be called approximately every ~5 millisec.
@@ -64,11 +64,13 @@ public class Main {
                     printSnowFlakes(snowFlakes, terminal);
 
                     printPlayer(terminal, player);
-                    isPlayerDead(player, snowFlakes);
+                    if (isPlayerDead(player, snowFlakes)){
+                        drawGameOver(terminal);
+
+                    }
 
                     terminal.flush(); // don't forget to flush to see any updates!
                 }
-
 
             } while (keyStroke == null);
 
@@ -76,6 +78,7 @@ public class Main {
             printPlayer(terminal, player);
             terminal.flush(); // don't forget to flush to see any updates!
         }
+
     }
 
     private static void removeDeadFlakes(List<Flake> snowFlakes) {
@@ -147,6 +150,29 @@ public class Main {
             }
         }
         return false;
+    }
+
+    private static void drawGameOver(Terminal terminal) throws IOException{
+        terminal.clearScreen();
+        terminal.setCursorPosition(33, 10);
+        terminal.putCharacter('G');
+        terminal.setCursorPosition(34, 10);
+        terminal.putCharacter('A');
+        terminal.setCursorPosition(35, 10);
+        terminal.putCharacter('M');
+        terminal.setCursorPosition(36, 10);
+        terminal.putCharacter('E');
+        terminal.setCursorPosition(38, 10);
+        terminal.putCharacter('O');
+        terminal.setCursorPosition(39, 10);
+        terminal.putCharacter('V');
+        terminal.setCursorPosition(40, 10);
+        terminal.putCharacter('E');
+        terminal.setCursorPosition(41, 10);
+        terminal.putCharacter('R');
+        terminal.flush();
+
+
     }
 
 }
