@@ -39,7 +39,7 @@ public class Main {
     private static void simulationLoop(Terminal terminal) throws InterruptedException, IOException {
 
 
-        Player player = new Player(10, 10, '\u2620');
+        Player player = new Player(39, 13, '\u2620');
         List<Flake> snowFlakes = new ArrayList<>();
         List<Flake> iceCreams = new ArrayList<>();
         List<Brick> bricks = generateWalls();
@@ -98,7 +98,7 @@ public class Main {
                 counter++;
                 System.out.println(counter);
             }
-            movePlayer(player, keyStroke);
+            movePlayer(player, keyStroke, bricks);
             printPlayer(terminal, player);
             terminal.flush(); // don't forget to flush to see any updates!
 
@@ -167,8 +167,12 @@ public class Main {
     private static List<Brick> generateWalls () {
         List<Brick> tempList = new ArrayList<>();
 
-        for (int i = 10; i < 68; i++) {
-            tempList.add(new Brick(i, 5));
+        for (int i = 10; i <= 68; i++) {
+            tempList.add(new Brick(i, 0));
+        }
+
+        for (int i = 10; i <= 68; i++) {
+            tempList.add(new Brick(i, 20));
         }
 
         for (int i = 1; i < 20; i++) {
@@ -192,26 +196,43 @@ public class Main {
 
         double probability = ThreadLocalRandom.current().nextDouble();
         if (probability <= 0.4) {
-            snowFlakes.add(new Flake(ThreadLocalRandom.current().nextInt(30), 0, symbol));
+            snowFlakes.add(new Flake(ThreadLocalRandom.current().nextInt(57) +11, 0, symbol));
         }
     }
 
 
-    private static void movePlayer(Player player, KeyStroke keyStroke) {
+    private static void movePlayer(Player player, KeyStroke keyStroke, List<Brick> bricks) {
         switch (keyStroke.getKeyType()) {
             case ArrowUp:
-                player.moveUp();
+                if (!isPlayerHittingWall(player.getX(), player.getY()-1, bricks)) {
+                    player.moveUp();
+                }
                 break;
             case ArrowDown:
-                player.moveDown();
-                break;
+                if (!isPlayerHittingWall(player.getX(), player.getY()+1, bricks)) {
+                    player.moveDown();
+                }
+                    break;
             case ArrowLeft:
-                player.moveLeft();
+                if (!isPlayerHittingWall(player.getX()-1, player.getY(), bricks)) {
+                    player.moveLeft();
+                }
                 break;
             case ArrowRight:
-                player.moveRight();
+                if (!isPlayerHittingWall(player.getX()+1, player.getY(), bricks)) {
+                    player.moveRight();
+                }
                 break;
         }
+    }
+
+    private static boolean isPlayerHittingWall(int x, int y, List<Brick> bricks){
+        for(Brick brick : bricks) {
+            if (x == brick.getX() && y == brick.getY()){
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isPlayerDead(Player player, List<Flake> flakes) throws IOException {

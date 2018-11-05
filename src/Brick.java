@@ -7,7 +7,7 @@ public class Brick {
     public Brick(int x, int y) {
         this.y = y;
         this.x = x;
-        this.symbol = '\u8965';
+        this.symbol = '\u2589';
     }
 
     public int getY() {
