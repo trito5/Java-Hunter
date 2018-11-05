@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-//Kommentar
+
 public class Main {
     public static void main(String[] args) {
         try {
@@ -86,7 +86,7 @@ public class Main {
                 }
 
             } while (keyStroke == null);
-            if (isPlayerDead(player, snowFlakes)){
+            if (isPlayerDead(player, snowFlakes)) {
                 break;
             }
 
@@ -128,9 +128,12 @@ public class Main {
         terminal.putCharacter(':');
         terminal.setCursorPosition(6, 30);
         terminal.putCharacter(' ');
-        terminal.setCursorPosition(7, 30);
+        String score = Integer.toString(counter);
 
-
+        for (int i = 0; i < score.length(); i++) {
+            terminal.setCursorPosition(i + 7, 30);
+            terminal.putCharacter(score.charAt(i));
+        }
     }
 
     private static void printPlayer(Terminal terminal, Player player) throws IOException {
@@ -226,7 +229,6 @@ public class Main {
         terminal.flush();
 
     }
-
 
 
 }
