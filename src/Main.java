@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-//kommentar
+
 public class Main {
     public static void main(String[] args) {
         try {
@@ -95,7 +95,7 @@ public class Main {
 
                     printScore(terminal, counter);
                     printPlayer(terminal, player);
-                    printWalls(bricks, terminal);
+                    printWalls(bricks, terminal, level);
                     printSpeed(terminal, level);
 
                     terminal.flush(); // don't forget to flush to see any updates!
@@ -108,7 +108,7 @@ public class Main {
 
             if (isPlayerScoring(player, iceCreams)) {
                 counter++;
-                System.out.println(counter);
+
             }
             movePlayer(player, keyStroke, bricks);
             printPlayer(terminal, player);
@@ -118,6 +118,7 @@ public class Main {
         drawGameOver(terminal, counter, level);
 
     }
+
 
     private static void removeDeadFlakes(List<Flake> snowFlakes) {
         List<Flake> flakesToRemove = new ArrayList<>();
@@ -173,7 +174,7 @@ public class Main {
     }
 
     private static void printPlayer(Terminal terminal, Player player) throws IOException {
-        terminal.setForegroundColor(TextColor.ANSI.YELLOW);
+
         terminal.setCursorPosition(player.getPreviousX(), player.getPreviousY());
         terminal.putCharacter(' ');
 
@@ -190,7 +191,36 @@ public class Main {
 
     }
 
-    private static void printWalls(List<Brick> bricks, Terminal terminal) throws IOException {
+    private static void printWalls(List<Brick> bricks, Terminal terminal, int level) throws IOException {
+        switch (level) {
+            case 1:
+                terminal.setForegroundColor(TextColor.ANSI.WHITE);
+                break;
+            case 2:
+                terminal.setForegroundColor(TextColor.ANSI.YELLOW);
+                break;
+            case 3:
+                terminal.setForegroundColor(TextColor.ANSI.GREEN);
+                break;
+            case 4:
+                terminal.setForegroundColor(TextColor.ANSI.CYAN);
+                break;
+            case 5:
+                terminal.setForegroundColor(TextColor.ANSI.BLUE);
+                break;
+            case 6:
+                terminal.setForegroundColor(TextColor.ANSI.MAGENTA);
+                break;
+            case 7:
+                terminal.setForegroundColor(TextColor.ANSI.RED);
+                break;
+            default:
+                terminal.setForegroundColor(TextColor.ANSI.WHITE);
+                break;
+
+        }
+
+
         for (Brick brick : bricks) {
             terminal.setCursorPosition(brick.getX(), brick.getY());
             terminal.putCharacter(brick.getSymbol());
