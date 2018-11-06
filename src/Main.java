@@ -40,7 +40,7 @@ public class Main {
     private static void simulationLoop(Terminal terminal) throws InterruptedException, IOException {
 
 
-        Player player = new Player(39, 13, '\u2620');
+        Player player = new Player(39, 13, '\u263B');
         List<Flake> snowFlakes = new ArrayList<>();
         List<Flake> iceCreams = new ArrayList<>();
         List<Brick> bricks = generateWalls();
@@ -80,20 +80,21 @@ public class Main {
                     }
 
                     terminal.clearScreen();
-                    addRandomFlakes(iceCreams, 'I');
+                    addRandomFlakes(iceCreams, '\u2615');
                     moveSnowFlakes(iceCreams);
                     removeDeadFlakes(iceCreams);
 
-
+                    terminal.setForegroundColor(TextColor.ANSI.GREEN);
                     printSnowFlakes(iceCreams, terminal);
 
-
-                    addRandomFlakes(snowFlakes, 'O');
+                    addRandomFlakes(snowFlakes, '\u2620');
                     moveSnowFlakes(snowFlakes);
                     removeDeadFlakes(snowFlakes);
+                    terminal.setForegroundColor(TextColor.ANSI.RED);
                     printSnowFlakes(snowFlakes, terminal);
-
+                    terminal.setForegroundColor(TextColor.ANSI.WHITE);
                     printScore(terminal, counter);
+
                     printPlayer(terminal, player);
                     printWalls(bricks, terminal, level);
                     printSpeed(terminal, level);
@@ -111,10 +112,12 @@ public class Main {
 
             }
             movePlayer(player, keyStroke, bricks);
+            terminal.setForegroundColor(TextColor.ANSI.WHITE);
             printPlayer(terminal, player);
             terminal.flush(); // don't forget to flush to see any updates!
 
         }
+        terminal.setForegroundColor(TextColor.ANSI.RED);
         drawGameOver(terminal, counter, level);
 
     }
@@ -184,6 +187,7 @@ public class Main {
     }
 
     private static void printSnowFlakes(List<Flake> snowFlakes, Terminal terminal) throws IOException {
+
         for (Flake flake : snowFlakes) {
             terminal.setCursorPosition(flake.getX(), flake.getY());
             terminal.putCharacter(flake.getSymbol());
