@@ -109,8 +109,17 @@ public class Main {
 
             if (isPlayerScoring(player, iceCreams)) {
                 counter++;
-
+                if (counter > 10 && counter % 5 == 0) {
+                    timeCounterThreshold -= speedChange;
+                    speedChange--;
+                    level++;
+                } else if (counter <= 10 && counter % 3 == 0) {
+                    timeCounterThreshold -= speedChange;
+                    speedChange--;
+                    level++;
+                }
             }
+
             movePlayer(player, keyStroke, bricks);
             terminal.setForegroundColor(TextColor.ANSI.WHITE);
             printPlayer(terminal, player);
