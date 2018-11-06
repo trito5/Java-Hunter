@@ -39,34 +39,32 @@ public class Main {
 
     private static void simulationLoop(Terminal terminal) throws InterruptedException, IOException {
 
-
         Player player = new Player(39, 13, '\u263B');
-        List<Flake> snowFlakes = new ArrayList<>();
-        List<Flake> iceCreams = new ArrayList<>();
-        List<Brick> bricks = generateWalls();
+        List<FallingObject> sharpList = new ArrayList<>();
+        List<FallingObject> javaList = new ArrayList<>();
+        List<Brick> brickList = generateWalls();
         int timeCounterThreshold = 80;
         int timeCounter = 0;
         int counter = 0;
         int speedChange = 15;
         int level = 1;
 
-
         while (true) {
             KeyStroke keyStroke;
             do {
-                // everything inside this loop will be called approximately every ~5 millisec.
+                // Looping every 5 milliseconds
                 Thread.sleep(5);
                 keyStroke = terminal.pollInput();
-                if (isPlayerDead(player, snowFlakes)) {
+                if (isPlayerDead(player, sharpList)) {
                     break;
                 }
 
                 timeCounter++;
                 if (timeCounter >= timeCounterThreshold) {
-
                     timeCounter = 0;
 
-                    if (isPlayerScoring(player, iceCreams)) {
+                    //If player scores check to see if level should increase
+                    if (isPlayerScoring(player, javaList)) {
                         counter++;
                         if (counter > 10 && counter % 5 == 0) {
                             timeCounterThreshold -= speedChange;
@@ -80,37 +78,44 @@ public class Main {
                     }
 
                     terminal.clearScreen();
-                    addRandomFlakes(iceCreams, '\u2615');
-                    moveSnowFlakes(iceCreams);
-                    removeDeadFlakes(iceCreams);
 
+                    //Creating falling Java cups
+                    addRandomFallingObjects(javaList, '\u2615');
+                    moveFallingObjects(javaList);
+                    removeDeadObjects(javaList);
                     terminal.setForegroundColor(TextColor.ANSI.GREEN);
-                    printSnowFlakes(iceCreams, terminal);
+                    printFallingObjects(javaList, terminal);
 
-                    addRandomFlakes(snowFlakes, '\u266F');
-                    moveSnowFlakes(snowFlakes);
-                    removeDeadFlakes(snowFlakes);
+                    //Creating falling Sharp symbols
+                    addRandomFallingObjects(sharpList, '\u266F');
+                    moveFallingObjects(sharpList);
+                    removeDeadObjects(sharpList);
                     terminal.setForegroundColor(TextColor.ANSI.RED);
-                    printSnowFlakes(snowFlakes, terminal);
+                    printFallingObjects(sharpList, terminal);
+
+                    //Printouts
                     terminal.setForegroundColor(TextColor.ANSI.WHITE);
                     printScore(terminal, counter);
                     printSpeed(terminal, level);
                     terminal.setForegroundColor(TextColor.ANSI.CYAN);
                     printGameName(terminal);
+
+                    //Printing player and walls
                     terminal.setForegroundColor(TextColor.ANSI.WHITE);
                     printPlayer(terminal, player);
-                    printWalls(bricks, terminal, level);
+                    printWalls(brickList, terminal, level);
 
-
-                    terminal.flush(); // don't forget to flush to see any updates!
+                    //Flushing to see any updates
+                    terminal.flush();
                 }
 
             } while (keyStroke == null);
-            if (isPlayerDead(player, snowFlakes)) {
+            if (isPlayerDead(player, sharpList)) {
                 break;
             }
 
-            if (isPlayerScoring(player, iceCreams)) {
+            //If player scores check to see if level should increase
+            if (isPlayerScoring(player, javaList)) {
                 counter++;
                 if (counter > 10 && counter % 5 == 0) {
                     timeCounterThreshold -= speedChange;
@@ -123,26 +128,29 @@ public class Main {
                 }
             }
 
-            movePlayer(player, keyStroke, bricks);
+            //Sets players position
+            movePlayer(player, keyStroke, brickList);
             terminal.setForegroundColor(TextColor.ANSI.WHITE);
             printPlayer(terminal, player);
-            terminal.flush(); // don't forget to flush to see any updates!
+
+            //Flushing to see any updates
+            terminal.flush();
 
         }
+
         terminal.setForegroundColor(TextColor.ANSI.RED);
         drawGameOver(terminal, counter, level);
 
     }
 
-
-    private static void removeDeadFlakes(List<Flake> snowFlakes) {
-        List<Flake> flakesToRemove = new ArrayList<>();
-        for (Flake flake : snowFlakes) {
-            if (flake.getY() >= 20) {
-                flakesToRemove.add(flake);
+    private static void removeDeadObjects(List<FallingObject> fallingObjects) {
+        List<FallingObject> objectsToRemove = new ArrayList<>();
+        for (FallingObject fallingObject : fallingObjects) {
+            if (fallingObject.getY() >= 20) {
+                objectsToRemove.add(fallingObject);
             }
         }
-        snowFlakes.removeAll(flakesToRemove);
+        fallingObjects.removeAll(objectsToRemove);
     }
 
     private static void printGameName(Terminal terminal) throws IOException {
@@ -166,8 +174,6 @@ public class Main {
         terminal.putCharacter('E');
         terminal.setCursorPosition(45, 23);
         terminal.putCharacter('R');
-
-
     }
 
     private static void printScore(Terminal terminal, int counter) throws IOException {
@@ -220,19 +226,17 @@ public class Main {
 
         terminal.setCursorPosition(player.getX(), player.getY());
         terminal.putCharacter(player.getSymbol());
-
     }
 
-    private static void printSnowFlakes(List<Flake> snowFlakes, Terminal terminal) throws IOException {
+    private static void printFallingObjects(List<FallingObject> fallingObjectList, Terminal terminal) throws IOException {
 
-        for (Flake flake : snowFlakes) {
-            terminal.setCursorPosition(flake.getX(), flake.getY());
-            terminal.putCharacter(flake.getSymbol());
+        for (FallingObject fallingObject : fallingObjectList) {
+            terminal.setCursorPosition(fallingObject.getX(), fallingObject.getY());
+            terminal.putCharacter(fallingObject.getSymbol());
         }
-
     }
 
-    private static void printWalls(List<Brick> bricks, Terminal terminal, int level) throws IOException {
+    private static void printWalls(List<Brick> brickList, Terminal terminal, int level) throws IOException {
         switch (level) {
             case 1:
                 terminal.setForegroundColor(TextColor.ANSI.WHITE);
@@ -258,80 +262,76 @@ public class Main {
             default:
                 terminal.setForegroundColor(TextColor.ANSI.WHITE);
                 break;
-
         }
 
-
-        for (Brick brick : bricks) {
+        for (Brick brick : brickList) {
             terminal.setCursorPosition(brick.getX(), brick.getY());
             terminal.putCharacter(brick.getSymbol());
         }
     }
 
     private static List<Brick> generateWalls() {
-        List<Brick> tempList = new ArrayList<>();
+        List<Brick> temporaryList = new ArrayList<>();
 
         for (int i = 10; i <= 68; i++) {
-            tempList.add(new Brick(i, 0));
+            temporaryList.add(new Brick(i, 0));
         }
 
         for (int i = 10; i <= 68; i++) {
-            tempList.add(new Brick(i, 20));
+            temporaryList.add(new Brick(i, 20));
         }
 
         for (int i = 1; i < 20; i++) {
-            tempList.add(new Brick(10, i));
+            temporaryList.add(new Brick(10, i));
         }
 
         for (int i = 1; i < 20; i++) {
-            tempList.add(new Brick(68, i));
+            temporaryList.add(new Brick(68, i));
         }
-        return tempList;
+        return temporaryList;
     }
 
-
-    private static void moveSnowFlakes(List<Flake> snowFlakes) {
-        for (Flake flake : snowFlakes) {
-            flake.fall();
+    private static void moveFallingObjects(List<FallingObject> fallingObjectList) {
+        for (FallingObject fallingObject : fallingObjectList) {
+            fallingObject.fall();
         }
     }
 
-    private static void addRandomFlakes(List<Flake> snowFlakes, char symbol) {
+    private static void addRandomFallingObjects(List<FallingObject> fallingObjectList, char symbol) {
 
         double probability = ThreadLocalRandom.current().nextDouble();
         if (probability <= 0.4) {
-            snowFlakes.add(new Flake(ThreadLocalRandom.current().nextInt(57) + 11, 0, symbol));
+            fallingObjectList.add(new FallingObject(ThreadLocalRandom.current().nextInt(57) + 11, 0, symbol));
         }
     }
 
-
-    private static void movePlayer(Player player, KeyStroke keyStroke, List<Brick> bricks) {
+    private static void movePlayer(Player player, KeyStroke keyStroke, List<Brick> brickList) {
         switch (keyStroke.getKeyType()) {
             case ArrowUp:
-                if (!isPlayerHittingWall(player.getX(), player.getY() - 1, bricks)) {
+                if (!isPlayerHittingWall(player.getX(), player.getY() - 1, brickList)) {
                     player.moveUp();
                 }
                 break;
             case ArrowDown:
-                if (!isPlayerHittingWall(player.getX(), player.getY() + 1, bricks)) {
+                if (!isPlayerHittingWall(player.getX(), player.getY() + 1, brickList)) {
                     player.moveDown();
                 }
                 break;
             case ArrowLeft:
-                if (!isPlayerHittingWall(player.getX() - 1, player.getY(), bricks)) {
+                if (!isPlayerHittingWall(player.getX() - 1, player.getY(), brickList)) {
                     player.moveLeft();
                 }
                 break;
             case ArrowRight:
-                if (!isPlayerHittingWall(player.getX() + 1, player.getY(), bricks)) {
+                if (!isPlayerHittingWall(player.getX() + 1, player.getY(), brickList)) {
                     player.moveRight();
                 }
                 break;
         }
     }
 
-    private static boolean isPlayerHittingWall(int x, int y, List<Brick> bricks) {
-        for (Brick brick : bricks) {
+    private static boolean isPlayerHittingWall(int x, int y, List<Brick> brickList) {
+        for (Brick brick : brickList) {
             if (x == brick.getX() && y == brick.getY()) {
                 return true;
             }
@@ -339,21 +339,19 @@ public class Main {
         return false;
     }
 
-    private static boolean isPlayerDead(Player player, List<Flake> flakes) throws IOException {
-        for (Flake flake : flakes) {
-            if (player.getX() == flake.getX() && player.getY() == flake.getY()) {
-
-
+    private static boolean isPlayerDead(Player player, List<FallingObject> fallingObjectList) throws IOException {
+        for (FallingObject fallingObject : fallingObjectList) {
+            if (player.getX() == fallingObject.getX() && player.getY() == fallingObject.getY()) {
                 return true;
             }
         }
         return false;
     }
 
-    private static boolean isPlayerScoring(Player player, List<Flake> iceCreams) throws IOException {
-        for (int i = 0; i < iceCreams.size(); i++) {
-            if (player.getX() == iceCreams.get(i).getX() && player.getY() == iceCreams.get(i).getY()) {
-                iceCreams.remove(i);
+    private static boolean isPlayerScoring(Player player, List<FallingObject> fallingObjectList) throws IOException {
+        for (int i = 0; i < fallingObjectList.size(); i++) {
+            if (player.getX() == fallingObjectList.get(i).getX() && player.getY() == fallingObjectList.get(i).getY()) {
+                fallingObjectList.remove(i);
                 return true;
             }
         }
@@ -381,10 +379,5 @@ public class Main {
         printScore(terminal, counter);
         printSpeed(terminal, level);
         terminal.flush();
-
     }
-
-
 }
-
-
