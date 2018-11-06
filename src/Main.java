@@ -94,10 +94,13 @@ public class Main {
                     printSnowFlakes(snowFlakes, terminal);
                     terminal.setForegroundColor(TextColor.ANSI.WHITE);
                     printScore(terminal, counter);
-
+                    printSpeed(terminal, level);
+                    terminal.setForegroundColor(TextColor.ANSI.CYAN);
+                    printGameName(terminal);
+                    terminal.setForegroundColor(TextColor.ANSI.WHITE);
                     printPlayer(terminal, player);
                     printWalls(bricks, terminal, level);
-                    printSpeed(terminal, level);
+
 
                     terminal.flush(); // don't forget to flush to see any updates!
                 }
@@ -140,6 +143,31 @@ public class Main {
             }
         }
         snowFlakes.removeAll(flakesToRemove);
+    }
+
+    private static void printGameName(Terminal terminal) throws IOException {
+        terminal.setCursorPosition(35, 23);
+        terminal.putCharacter('J');
+        terminal.setCursorPosition(36, 23);
+        terminal.putCharacter('A');
+        terminal.setCursorPosition(37, 23);
+        terminal.putCharacter('V');
+        terminal.setCursorPosition(38, 23);
+        terminal.putCharacter('A');
+        terminal.setCursorPosition(40, 23);
+        terminal.putCharacter('H');
+        terminal.setCursorPosition(41, 23);
+        terminal.putCharacter('U');
+        terminal.setCursorPosition(42, 23);
+        terminal.putCharacter('N');
+        terminal.setCursorPosition(43, 23);
+        terminal.putCharacter('T');
+        terminal.setCursorPosition(44, 23);
+        terminal.putCharacter('E');
+        terminal.setCursorPosition(45, 23);
+        terminal.putCharacter('R');
+
+
     }
 
     private static void printScore(Terminal terminal, int counter) throws IOException {
