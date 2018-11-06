@@ -87,7 +87,7 @@ public class Main {
                     terminal.setForegroundColor(TextColor.ANSI.GREEN);
                     printSnowFlakes(iceCreams, terminal);
 
-                    addRandomFlakes(snowFlakes, '\u2620');
+                    addRandomFlakes(snowFlakes, '\u266F');
                     moveSnowFlakes(snowFlakes);
                     removeDeadFlakes(snowFlakes);
                     terminal.setForegroundColor(TextColor.ANSI.RED);
